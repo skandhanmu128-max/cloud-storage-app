@@ -1,76 +1,67 @@
-# Supabase Cloud File Storage — Frontend App
+﻿# whatwg-url
 
-This is a simple frontend-only web app that uses Supabase Auth and Storage to let users sign up, log in, upload files, and list/download their own files.
+whatwg-url is a full implementation of the WHATWG [URL Standard](https://url.spec.whatwg.org/). It can be used standalone, but it also exposes a lot of the internal algorithms that are useful for integrating a URL parser into a project like [jsdom](https://github.com/tmpvar/jsdom).
 
-Files included:
+## Current Status
 
-- `index.html` — main UI
-- `styles.css` — basic styling
-- `script.js` — JavaScript that talks to Supabase
+whatwg-url is currently up to date with the URL spec up to commit [a62223](https://github.com/whatwg/url/commit/a622235308342c9adc7fc2fd1659ff059f7d5e2a).
 
-What you must provide from Supabase
+## API
 
-1. Project URL — the REST endpoint for your Supabase project. Example: `https://xyzcompany.supabase.co`
-2. Anon Key — the public anon key for your Supabase project (from Project Settings → API)
-3. Storage bucket name — the bucket that will hold files (create one in Supabase Storage). Default in the code: `public-files`.
+### The `URL` Constructor
 
-How to connect
+The main API is the [`URL`](https://url.spec.whatwg.org/#url) export, which follows the spec's behavior in all ways (including e.g. `USVString` conversion). Most consumers of this library will want to use this.
 
-1. Open `script.js` and replace the placeholders at the top with your values:
+### Low-level URL Standard API
 
-   - `SUPABASE_URL` — your project URL
-   - `SUPABASE_ANON_KEY` — your anon key
-   - `STORAGE_BUCKET` — the bucket name you created
+The following methods are exported for use by places like jsdom that need to implement things like [`HTMLHyperlinkElementUtils`](https://html.spec.whatwg.org/#htmlhyperlinkelementutils). They operate on or return an "internal URL" or ["URL record"](https://url.spec.whatwg.org/#concept-url) type.
 
-2. Ensure the bucket access rules are as you prefer. For production, keep the bucket private and rely on signed URLs for downloads. For testing, you can set it public.
+- [URL parser](https://url.spec.whatwg.org/#concept-url-parser): `parseURL(input, { baseURL, encodingOverride })`
+- [Basic URL parser](https://url.spec.whatwg.org/#concept-basic-url-parser): `basicURLParse(input, { baseURL, encodingOverride, url, stateOverride })`
+- [URL serializer](https://url.spec.whatwg.org/#concept-url-serializer): `serializeURL(urlRecord, excludeFragment)`
+- [Host serializer](https://url.spec.whatwg.org/#concept-host-serializer): `serializeHost(hostFromURLRecord)`
+- [Serialize an integer](https://url.spec.whatwg.org/#serialize-an-integer): `serializeInteger(number)`
+- [Origin](https://url.spec.whatwg.org/#concept-url-origin) [serializer](https://html.spec.whatwg.org/multipage/browsers.html#serialization-of-an-origin): `serializeURLOrigin(urlRecord)`
+- [Set the username](https://url.spec.whatwg.org/#set-the-username): `setTheUsername(urlRecord, usernameString)`
+- [Set the password](https://url.spec.whatwg.org/#set-the-password): `setThePassword(urlRecord, passwordString)`
+- [Cannot have a username/password/port](https://url.spec.whatwg.org/#cannot-have-a-username-password-port): `cannotHaveAUsernamePasswordPort(urlRecord)`
 
-3. Open `index.html` in your browser (double-click or host with a simple static server). The app is frontend-only and does not require a backend server.
+The `stateOverride` parameter is one of the following strings:
 
-Notes & recommendations
+- [`"scheme start"`](https://url.spec.whatwg.org/#scheme-start-state)
+- [`"scheme"`](https://url.spec.whatwg.org/#scheme-state)
+- [`"no scheme"`](https://url.spec.whatwg.org/#no-scheme-state)
+- [`"special relative or authority"`](https://url.spec.whatwg.org/#special-relative-or-authority-state)
+- [`"path or authority"`](https://url.spec.whatwg.org/#path-or-authority-state)
+- [`"relative"`](https://url.spec.whatwg.org/#relative-state)
+- [`"relative slash"`](https://url.spec.whatwg.org/#relative-slash-state)
+- [`"special authority slashes"`](https://url.spec.whatwg.org/#special-authority-slashes-state)
+- [`"special authority ignore slashes"`](https://url.spec.whatwg.org/#special-authority-ignore-slashes-state)
+- [`"authority"`](https://url.spec.whatwg.org/#authority-state)
+- [`"host"`](https://url.spec.whatwg.org/#host-state)
+- [`"hostname"`](https://url.spec.whatwg.org/#hostname-state)
+- [`"port"`](https://url.spec.whatwg.org/#port-state)
+- [`"file"`](https://url.spec.whatwg.org/#file-state)
+- [`"file slash"`](https://url.spec.whatwg.org/#file-slash-state)
+- [`"file host"`](https://url.spec.whatwg.org/#file-host-state)
+- [`"path start"`](https://url.spec.whatwg.org/#path-start-state)
+- [`"path"`](https://url.spec.whatwg.org/#path-state)
+- [`"cannot-be-a-base-URL path"`](https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state)
+- [`"query"`](https://url.spec.whatwg.org/#query-state)
+- [`"fragment"`](https://url.spec.whatwg.org/#fragment-state)
 
-- This app stores files under a per-user prefix (`<user-id>/<filename>`) to isolate each user’s uploads.
-- Uploads use `upsert: true` so re-uploading a file with the same name replaces it.
-- Signed URLs are created with a 60-second expiry. Increase or decrease as needed.
-- You can extend the app to store metadata in the Supabase database (who uploaded, timestamps, file size) if you like.
+The URL record type has the following API:
 
-If you want, paste here your `Project URL`, `Anon Key`, and `Bucket name` (or confirm and I'll guide you where to paste them). Do NOT paste secrets publicly if you're on a shared or insecure environment.
+- [`scheme`](https://url.spec.whatwg.org/#concept-url-scheme)
+- [`username`](https://url.spec.whatwg.org/#concept-url-username)
+- [`password`](https://url.spec.whatwg.org/#concept-url-password)
+- [`host`](https://url.spec.whatwg.org/#concept-url-host)
+- [`port`](https://url.spec.whatwg.org/#concept-url-port)
+- [`path`](https://url.spec.whatwg.org/#concept-url-path) (as an array)
+- [`query`](https://url.spec.whatwg.org/#concept-url-query)
+- [`fragment`](https://url.spec.whatwg.org/#concept-url-fragment)
+- [`cannotBeABaseURL`](https://url.spec.whatwg.org/#url-cannot-be-a-base-url-flag) (as a boolean)
 
-Security note — service_role key
+These properties should be treated with care, as in general changing them will cause the URL record to be in an inconsistent state until the appropriate invocation of `basicURLParse` is used to fix it up. You can see examples of this in the URL Standard, where there are many step sequences like "4. Set context object’s url’s fragment to the empty string. 5. Basic URL parse _input_ with context object’s url as _url_ and fragment state as _state override_." In between those two steps, a URL record is in an unusable state.
 
-- Supabase also provides a `service_role` key (an admin-level secret) which must NEVER be used in client-side code or committed to public repos.
-- If you need server-side admin actions (for example, generating long-lived signed URLs, changing access rules, or modifying storage policies), use the `service_role` key only from a secure server or serverless function.
-- The `script.js` file must only contain the public anon key (which is safe for client use). If you see a `service_role` token in your Supabase dashboard, treat it like a password.
-
-Creating dummy auth users (server-side)
-
-If you'd like to bulk-create dummy users (for testing), I added a small Node script `create_dummy_users.js` that calls the Supabase Admin API using the `service_role` key. Do NOT run this in the browser.
-
-Steps (PowerShell):
-
-1. Install Node.js if you don't have it: https://nodejs.org/
-2. Open PowerShell and change to the project folder (where `create_dummy_users.js` is):
-
-```powershell
-cd "c:\Users\Yashawantha DS\OneDrive\Desktop\Documents\cloud storage p 1"
-```
-
-3. Set environment variables in the same PowerShell session (replace with your service role key):
-
-```powershell
-$env:SUPABASE_URL = "https://xfdfgitzaeafklaxppze.supabase.co"
-$env:SUPABASE_SERVICE_ROLE_KEY = "<your_service_role_key_here>"
-```
-
-4. Install node-fetch (used by the script) and run the script:
-
-```powershell
-npm init -y
-npm install node-fetch@2
-node create_dummy_users.js
-```
-
-The script will attempt to create three dummy users. Check the Supabase Dashboard → Authentication → Users to verify they were added.
-
-Security reminder: Remove the environment variables after running, and never commit your `service_role` key anywhere.
-
-
+The return value of "failure" in the spec is represented by the string `"failure"`. That is, functions like `parseURL` and `basicURLParse` can return _either_ a URL record _or_ the string `"failure"`.
