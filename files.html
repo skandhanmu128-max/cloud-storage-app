@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Files - Cloud Storage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <i class="fas fa-cloud"></i>
+                <a href="index.html" style="color: inherit; text-decoration: none;">Cloud Storage</a>
+                <span class="brand-sub">Your Files</span>
+            </div>
+            <nav class="nav">
+                <div class="input-with-icon" style="width: 300px; margin-right: 16px;">
+                    <i class="fas fa-search"></i>
+                    <input id="search-input" type="text" placeholder="Search files..." style="margin: 0;">
+                </div>
+                <select id="sort-select" style="width: auto; margin-right: 16px;">
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="size-desc">Size (Largest)</option>
+                    <option value="size-asc">Size (Smallest)</option>
+                </select>
+                <button id="logout-btn" class="secondary">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="upload-section" class="card reveal">
+            <div id="upload-area" class="upload-area">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--accent); margin-bottom: 16px;"></i>
+                <h3>Drag & Drop Files Here</h3>
+                <p style="color: var(--muted);">or</p>
+                <input type="file" id="file-input" multiple style="display: none;">
+                <button id="browse-btn">
+                    <i class="fas fa-folder-open"></i> Browse Files
+                </button>
+            </div>
+        </section>
+
+        <section id="upload-progress-section" class="card reveal" style="display: none;">
+            <h3>
+                <i class="fas fa-upload"></i> Uploading Files
+                <button id="minimize-upload" class="secondary" style="float: right; padding: 8px;">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </h3>
+            <div id="upload-progress-list"></div>
+        </section>
+
+        <section id="files-section" class="card reveal">
+            <div class="files-grid" id="files-list">
+                <div class="file-card skeleton"></div>
+                <div class="file-card skeleton"></div>
+                <div class="file-card skeleton"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- File Preview Modal -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div style="padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 id="preview-filename">File Preview</h3>
+                    <button id="close-preview" class="secondary" style="padding: 8px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="preview-content" style="margin-bottom: 24px; max-height: 60vh; overflow: auto;">
+                    <!-- Preview content will be inserted here -->
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button id="preview-download" class="secondary">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button id="preview-delete" class="secondary" style="color: var(--error);">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div style="padding: 24px;">
+                <h3 style="margin-bottom: 16px;">Delete File?</h3>
+                <p style="color: var(--muted); margin-bottom: 24px;">
+                    Are you sure you want to delete <strong id="delete-filename"></strong>? This action cannot be undone.
+                </p>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button id="cancel-delete" class="secondary">Cancel</button>
+                    <button id="confirm-delete" style="background: var(--error);">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

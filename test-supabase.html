@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="status">Testing connection...</div>
+    <div id="result"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+        const SUPABASE_URL = "https://xfdfgitzaeafklaxppze.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmZGZnaXR6YWVhZmtsYXhwcHplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NDQzNzAsImV4cCI6MjA3NTUyMDM3MH0._F1ezbvwLxB-KKRVg4N8DoZk4B6OHATISNdDjxvwYu4";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function testConnection() {
+            try {
+                // Test basic connection
+                const { data, error } = await supabase.auth.getUser();
+                document.getElementById('status').innerHTML = '✅ Supabase connection successful!';
+                document.getElementById('result').innerHTML = `
+                    <p><strong>Connection Status:</strong> Connected</p>
+                    <p><strong>User:</strong> ${data?.user ? 'Logged in' : 'Not logged in'}</p>
+                    <p><strong>Error:</strong> ${error ? error.message : 'None'}</p>
+                `;
+            } catch (err) {
+                document.getElementById('status').innerHTML = '❌ Supabase connection failed!';
+                document.getElementById('result').innerHTML = `
+                    <p><strong>Error:</strong> ${err.message}</p>
+                    <p><strong>Details:</strong> ${JSON.stringify(err, null, 2)}</p>
+                `;
+            }
+        }
+        
+        testConnection();
+    </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Storage Test</title>
+</head>
+<body>
+    <h1>Supabase Storage Test</h1>
+    <div id="status">Testing storage...</div>
+    <div id="result"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+        const SUPABASE_URL = "https://xfdfgitzaeafklaxppze.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmZGZnaXR6YWVhZmtsYXhwcHplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NDQzNzAsImV4cCI6MjA3NTUyMDM3MH0._F1ezbvwLxB-KKRVg4N8DoZk4B6OHATISNdDjxvwYu4";
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function testStorage() {
+            try {
+                // Test listing buckets
+                const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+                
+                if (bucketError) {
+                    document.getElementById('status').innerHTML = '❌ Error listing buckets!';
+                    document.getElementById('result').innerHTML = `<p><strong>Error:</strong> ${bucketError.message}</p>`;
+                    return;
+                }
+                
+                document.getElementById('status').innerHTML = '✅ Storage connection successful!';
+                document.getElementById('result').innerHTML = `
+                    <p><strong>Available Buckets:</strong></p>
+                    <ul>
+                        ${buckets.map(bucket => `<li>${bucket.name} (${bucket.public ? 'Public' : 'Private'})</li>`).join('')}
+                    </ul>
+                    <p><strong>Looking for 'user-files' bucket:</strong> ${buckets.find(b => b.name === 'user-files') ? '✅ Found!' : '❌ Not found - needs to be created'}</p>
+                `;
+                
+                // Test listing files in user-files bucket
+                const { data: files, error: filesError } = await supabase.storage
+                    .from('user-files')
+                    .list('', { limit: 10 });
+                    
+                if (filesError) {
+                    document.getElementById('result').innerHTML += `<p><strong>Error listing files:</strong> ${filesError.message}</p>`;
+                } else {
+                    document.getElementById('result').innerHTML += `<p><strong>Files in user-files bucket:</strong> ${files.length} files</p>`;
+                    if (files.length > 0) {
+                        document.getElementById('result').innerHTML += `<ul>${files.map(f => `<li>${f.name}</li>`).join('')}</ul>`;
+                    }
+                }
+                
+            } catch (err) {
+                document.getElementById('status').innerHTML = '❌ Storage test failed!';
+                document.getElementById('result').innerHTML = `<p><strong>Error:</strong> ${err.message}</p>`;
+            }
+        }
+        
+        testStorage();
+    </script>
+</body>
+</html>
+
+
+
+

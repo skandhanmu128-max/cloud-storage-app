@@ -1,0 +1,17 @@
+{
+  "name": "cloud-storage-p-1",
+  "version": "1.0.0",
+  "description": "This is a simple frontend-only web app that uses Supabase Auth and Storage to let users sign up, log in, upload files, and list/download their own files.",
+  "main": "create_dummy_users.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
